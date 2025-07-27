@@ -1,0 +1,25 @@
+import os
+import cv2
+import numpy as np
+from utils.mediapipe_utils import extract_hand_landmarks
+
+DATASET_DIR = "sign_to_text/dataset/WLASL"
+OUTPUT_DIR = "sign_to_text/dataset/landmarks"
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def process_dataset():
+    for root, _, files in os.walk(DATASET_DIR):
+        for file in files:
+            if file.endswith(".mp4"):
+                video_path = os.path.join(root, file)
+                print(f"Processing: {file}")
+                landmarks = extract_hand_landmarks(video_path)
+                if landmarks:
+                    save_path = os.path.join(OUTPUT_DIR, file.replace('.mp4', '.npy'))
+                    np.save(save_path, np.array(landmarks))
+                else:
+                    print(f"⚠ No landmarks found: {file}")
+
+if _name_ == '_main_':
+    process_dataset()
